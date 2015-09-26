@@ -17,9 +17,9 @@
           while(index >= 0){
             var tweet = streams.home[index];
             var $tweet = $('<div></div>');
-            var dateObj = streams.home[index].created_at;
-            var timeStamp = dateObj.getHours() + ':' + dateObj.getMinutes();
-            //debugger;
+            var date = streams.home[index].created_at;
+            var minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+            var timeStamp = date.getHours() + ':' + minutes;
 
             $tweet.text(timeStamp + ' @' + tweet.user + ': ' + tweet.message);
             $tweet.appendTo($body);
