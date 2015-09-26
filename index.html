@@ -8,18 +8,27 @@
     <script>
 
       $(document).ready(function(){
-        var $body = $('body');
-        $body.html('');
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
-          index -= 1;
-        }
+        var loadTweets = function() {
+          var $body = $('body');
+          $body.html('');
 
+          var index = streams.home.length - 1;
+          while(index >= 0){
+            var tweet = streams.home[index];
+            var $tweet = $('<div></div>');
+            var dateObj = streams.home[index].created_at;
+            var timeStamp = dateObj.getHours() + ':' + dateObj.getMinutes();
+            //debugger;
+
+            $tweet.text(timeStamp + ' @' + tweet.user + ': ' + tweet.message);
+            $tweet.appendTo($body);
+            index -= 1;
+          }
+        };
+
+        loadTweets();
+        setInterval(loadTweets, 4000);
       });
 
     </script>
