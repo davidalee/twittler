@@ -3,33 +3,73 @@
   <head>
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
+    <link href='https://fonts.googleapis.com/css?family=Amaranth' rel='stylesheet' type='text/css'>
   </head>
   <body>
     <script>
 
       $(document).ready(function(){
 
+        var $header = $('<div id = "header">Twittler</div>');
+
         var loadTweets = function() {
           var $body = $('body');
           $body.html('');
+          $body.prepend($header);
+
+          // Misc. variables
+
+          var spacer = '\u2002\u2002\u269B\u2002\u2002';
+          var convertMonth = { 0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' };
+
+          // Iterates through streams.home array, then formats and appends each tweet to the body (reverse chronological order)
 
           var index = streams.home.length - 1;
           while(index >= 0){
             var tweet = streams.home[index];
-            var $tweet = $('<div></div>');
             var date = streams.home[index].created_at;
-            var minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
-            var timeStamp = date.getHours() + ':' + minutes;
+            var tweetInfo = '<a href="#' + tweet.user + '"> @' + tweet.user + '</a>' + spacer + convertMonth[date.getMonth()] + ' ' + date.getDate() + spacer;
 
-            $tweet.text(timeStamp + ' @' + tweet.user + ': ' + tweet.message);
+            // Makes the time look pretty
+
+            var minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+            var timeStamp = date.getHours() > 12 ? (date.getHours() - 12) + ':' + minutes + ' pm' : date.getHours() + ':' + minutes + ' am';
+            
+            // Formatting (adding HTML) and appending tweet to <body>
+
+            var $tweet = $('<div class = "container"><img src ="https://community.xero.com/content/img/no-profile-f3744056.png" width="55px" height="55px" />' + tweetInfo + timeStamp + '<p>' +  tweet.message + '</p></div>');
+            
             $tweet.appendTo($body);
             index -= 1;
           }
+
+          // Reload Tweets button
+
+          var reloadTweets = $('<div class="button"><button id = "reload">Reload Tweets</button></div>');
+          $('#header').after(reloadTweets);
+
+          // Event Listeners
+
+          $('#reload').on('click', function() {
+            loadTweets();
+          });
+
+          $('a').on('click', function() {
+            loadUserTweets(this.getAttribute('href'));
+          });
         };
 
         loadTweets();
-        setInterval(loadTweets, 4000);
+        
+        // Loads tweets by a specific user that's passed in as argument (removes tweets from DOM if from !user)
+        var loadUserTweets = function(user) {
+          $('div a[href!="' + user + '"]').parent().remove();
+          var $showUserTweets = $('<div class="alert">Showing tweets from @' + user.slice(1) + '. Click "Reload Tweets" to go back.' + '</div>');
+          $('#reload').after($showUserTweets);
+        };
       });
+
 
     </script>
   </body>
